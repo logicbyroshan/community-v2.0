@@ -10,31 +10,10 @@
 [![Django](https://img.shields.io/badge/Django-5.2.5-092E20?style=for-the-badge&logo=django&logoColor=white)](https://www.djangoproject.com/)
 [![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 [🌐 Live Demo](https://risetogether.tech) • [📖 Documentation](#documentation) • [🐛 Report Bug](https://github.com/risetogethercommunity/rise-together-web/issues) • [✨ Request Feature](https://github.com/risetogethercommunity/rise-together-web/issues)
 
 </div>
-
----
-
-## 📋 Table of Contents
-
-- [About The Project](#about-the-project)
-- [Features](#features)
-- [Screenshots](#screenshots)
-- [Tech Stack](#tech-stack)
-- [Project Structure](#project-structure)
-- [Getting Started](#getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Installation](#installation)
-  - [Environment Variables](#environment-variables)
-- [Usage](#usage)
-- [Roadmap](#roadmap)
-- [Contributing](#contributing)
-- [License](#license)
-- [Contact](#contact)
-- [Acknowledgments](#acknowledgments)
 
 ---
 
@@ -110,7 +89,6 @@ To build the largest and most supportive tech community where knowledge flows fr
 
 <div align="center">
 
-### Homepage & About Section
 <table>
   <tr>
     <td width="50%">
@@ -124,7 +102,6 @@ To build the largest and most supportive tech community where knowledge flows fr
   </tr>
 </table>
 
-### Mission & Projects
 <table>
   <tr>
     <td width="50%">
@@ -138,7 +115,6 @@ To build the largest and most supportive tech community where knowledge flows fr
   </tr>
 </table>
 
-### Activities & Articles
 <table>
   <tr>
     <td width="50%">
@@ -152,7 +128,6 @@ To build the largest and most supportive tech community where knowledge flows fr
   </tr>
 </table>
 
-### Team & Leaderboard
 <table>
   <tr>
     <td width="50%">
@@ -166,7 +141,6 @@ To build the largest and most supportive tech community where knowledge flows fr
   </tr>
 </table>
 
-### Achievements & Resources
 <table>
   <tr>
     <td width="50%">
@@ -180,7 +154,6 @@ To build the largest and most supportive tech community where knowledge flows fr
   </tr>
 </table>
 
-### FAQ & Feedback
 <table>
   <tr>
     <td width="50%">
@@ -406,41 +379,6 @@ DATABASE_URL=your-database-url
 
 ---
 
-## 💻 Usage
-
-### For Users
-
-1. **Register an Account** - Click "Join Community" to create your profile
-2. **Explore Content** - Browse blogs, projects, and resources
-3. **Engage** - Comment on posts, join activities
-4. **Share** - Write blog posts and showcase your projects
-5. **Learn** - Access curated resources and tutorials
-
-### For Developers
-
-1. **Admin Panel** - Manage content at `/admin`
-2. **Create Models** - Add new features by extending models
-3. **Custom Templates** - Modify templates in `/templates`
-4. **Styling** - Edit CSS in `/static/css`
-5. **Testing** - Run tests with `python manage.py test`
-
-### Running Tests
-
-```sh
-# Run all tests
-python manage.py test
-
-# Run specific app tests
-python manage.py test accounts
-python manage.py test community
-
-# Run with coverage
-coverage run --source='.' manage.py test
-coverage report
-```
-
----
-
 ## 🗺️ Roadmap
 
 ### Phase 1: Core Features ✅
@@ -469,42 +407,6 @@ coverage report
 
 See the [open issues](https://github.com/risetogethercommunity/rise-together-web/issues) for a full list of proposed features and known issues.
 
----
-
-## 🤝 Contributing
-
-Contributions are what make the open-source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
-
-### How to Contribute
-
-1. **Fork the Project**
-2. **Create your Feature Branch**
-   ```sh
-   git checkout -b feature/AmazingFeature
-   ```
-3. **Commit your Changes**
-   ```sh
-   git commit -m 'Add some AmazingFeature'
-   ```
-4. **Push to the Branch**
-   ```sh
-   git push origin feature/AmazingFeature
-   ```
-5. **Open a Pull Request**
-
-### Contribution Guidelines
-
-- Follow PEP 8 style guide for Python code
-- Write meaningful commit messages
-- Add tests for new features
-- Update documentation as needed
-- Be respectful and inclusive
-
----
-
-## 📄 License
-
-Distributed under the MIT License. See `LICENSE` for more information.
 
 ---
 
@@ -520,27 +422,3 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 **Project Link:** [https://github.com/risetogethercommunity/rise-together-web](https://github.com/risetogethercommunity/rise-together-web)
 
----
-
-## 🙏 Acknowledgments
-
-Special thanks to all our contributors and supporters:
-
-- [Django](https://www.djangoproject.com/) - The web framework for perfectionists with deadlines
-- [TailwindCSS](https://tailwindcss.com/) - A utility-first CSS framework
-- [Font Awesome](https://fontawesome.com/) - Icon library and toolkit
-- [TinyMCE](https://www.tiny.cloud/) - Rich text editor
-- [Unsplash](https://unsplash.com/) - Beautiful free images
-- All our community members who make this project possible! ❤️
-
----
-
-<div align="center">
-
-### ⭐ Star us on GitHub — it motivates us a lot!
-
-Made with ❤️ by the Rise Together Community
-
-[🔝 Back to Top](#-rise-together)
-
-</div>
