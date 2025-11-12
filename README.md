@@ -10,7 +10,6 @@
 [![Django](https://img.shields.io/badge/Django-5.2.5-092E20?style=for-the-badge&logo=django&logoColor=white)](https://www.djangoproject.com/)
 [![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
 [![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
 
 [🌐 Live Demo](https://risetogether.tech) • [📖 Documentation](#documentation) • [🐛 Report Bug](https://github.com/risetogethercommunity/rise-together-web/issues) • [✨ Request Feature](https://github.com/risetogethercommunity/rise-together-web/issues)
 
