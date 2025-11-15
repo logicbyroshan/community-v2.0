@@ -13,24 +13,11 @@
 
 [![Django](https://img.shields.io/badge/Django-5.2.5-092E20?style=for-the-badge&logo=django&logoColor=white)](https://www.djangoproject.com/)
 [![Python](https://img.shields.io/badge/Python-3.8+-3776AB?style=for-the-badge&logo=python&logoColor=white)](https://www.python.org/)
-[![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)](LICENSE)
-[![Stars](https://img.shields.io/github/stars/logicbyroshan/social-community-platform?style=for-the-badge&logo=github)](https://github.com/logicbyroshan/social-community-platform/stargazers)
+[![TailwindCSS](https://img.shields.io/badge/Tailwind-CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)](https://tailwindcss.com/)
 
 [🌐 Live Demo](https://risetogether.tech) • [🐛 Report Bug](https://github.com/logicbyroshan/social-community-platform/issues) • [✨ Request Feature](https://github.com/logicbyroshan/social-community-platform/issues)
 
 </div>
-
----
-
-## 📚 Documentation
-
-| Document | Description |
-|----------|-------------|
-| [📖 About](ABOUT.md) | Detailed project information, vision, and mission |
-| [🛠️ Tech Stack](TECH_STACK.md) | Complete technology stack and dependencies |
-| [📁 Project Structure](PROJECT_STRUCTURE.md) | Detailed project architecture and file organization |
-| [🚀 Setup Guide](SETUP_GUIDE.md) | Complete installation and deployment guide |
-| [🤝 Contributing](CONTRIBUTING.md) | Contribution guidelines and code standards |
 
 ---
 
@@ -151,46 +138,131 @@
 
 ---
 
-## 🚀 Quick Setup
+## 🚀 Getting Started
 
-```bash
-# Clone the repository
-git clone https://github.com/logicbyroshan/social-community-platform.git
-cd social-community-platform
+Follow these steps to get Rise Together running on your local machine.
 
-# Create virtual environment
-python -m venv venv
-venv\Scripts\activate  # Windows
+### Prerequisites
 
-# Install dependencies
-pip install -r requirements.txt
+Make sure you have the following installed:
 
-# Setup database
-python manage.py migrate
+- **Python 3.8 or higher**
+  ```sh
+  python --version
+  ```
 
-# Run development server
-python manage.py runserver
+- **pip** (Python package manager)
+  ```sh
+  pip --version
+  ```
+
+- **Git**
+  ```sh
+  git --version
+  ```
+
+### Installation
+
+1. **Clone the repository**
+   ```sh
+   git clone https://github.com/risetogethercommunity/rise-together-web.git
+   cd rise-together-web
+   ```
+
+2. **Create a virtual environment**
+   ```sh
+   # Windows
+   python -m venv venv
+   venv\Scripts\activate
+
+   # macOS/Linux
+   python3 -m venv venv
+   source venv/bin/activate
+   ```
+
+3. **Install dependencies**
+   ```sh
+   pip install -r requirements.txt
+   ```
+
+4. **Apply database migrations**
+   ```sh
+   python manage.py makemigrations
+   python manage.py migrate
+   ```
+
+5. **Create a superuser (admin account)**
+   ```sh
+   python manage.py createsuperuser
+   ```
+
+6. **Collect static files**
+   ```sh
+   python manage.py collectstatic
+   ```
+
+7. **Run the development server**
+   ```sh
+   python manage.py runserver
+   ```
+
+8. **Open your browser**
+   
+   Navigate to `http://127.0.0.1:8000/` to view the application.
+   
+   Admin panel: `http://127.0.0.1:8000/admin/`
+
+### Environment Variables
+
+Create a `.env` file in the root directory for sensitive information:
+
+```env
+SECRET_KEY=your-secret-key-here
+DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1,risetogether.tech
+
+# Email Configuration (for password reset)
+EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_USE_TLS=True
+EMAIL_HOST_USER=your-email@gmail.com
+EMAIL_HOST_PASSWORD=your-app-password
+
+# Database (for production)
+DATABASE_URL=your-database-url
 ```
 
-> See [SETUP_GUIDE.md](SETUP_GUIDE.md) for complete installation and deployment guide.
-
 ---
 
-## 🤝 Contributing
+## 🗺️ Roadmap
 
-We welcome contributions! Please see our [CONTRIBUTING.md](CONTRIBUTING.md) for guidelines on how to contribute to this project.
+### Phase 1: Core Features ✅
+- [x] User authentication system
+- [x] Profile management
+- [x] Blog platform
+- [x] Projects showcase
+- [x] Resources library
+- [x] Contact form & newsletter
 
-1. Fork the Project
-2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
-4. Push to the Branch (`git push origin feature/AmazingFeature`)
-5. Open a Pull Request
+### Phase 2: Enhanced Features 🚧
+- [ ] Real-time chat system
+- [ ] Video tutorials section
+- [ ] Project collaboration tools
+- [ ] Mentor-mentee matching
+- [ ] Skill assessment tests
+- [ ] Achievement system
 
----
+### Phase 3: Advanced Features 📋
+- [ ] Live coding sessions
+- [ ] Job board integration
+- [ ] Community marketplace
+- [ ] Mobile application
+- [ ] API for third-party integrations
+- [ ] Multi-language support
 
-## 📄 License
+See the [open issues](https://github.com/risetogethercommunity/rise-together-web/issues) for a full list of proposed features and known issues.
 
-Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 
 ---
 
@@ -201,17 +273,8 @@ Distributed under the MIT License. See [LICENSE](LICENSE) for more information.
 - 🌐 Website: [risetogether.tech](https://risetogether.tech)
 - 📧 Email: contact@risetogether.tech
 - 💬 Discord: [Join our server](https://discord.gg/risetogether)
+- 🐦 Twitter: [@risetogether](https://twitter.com/risetogether)
+- 📘 LinkedIn: [Rise Together](https://linkedin.com/company/risetogether)
 
-**Project Link:** [https://github.com/logicbyroshan/social-community-platform](https://github.com/logicbyroshan/social-community-platform)
+**Project Link:** [https://github.com/risetogethercommunity/rise-together-web](https://github.com/risetogethercommunity/rise-together-web)
 
----
-
-<div align="center">
-
-### ⭐ Star us on GitHub — it motivates us a lot!
-
-Made with ❤️ by the Rise Together Community
-
-[🔝 Back to Top](#-rise-together)
-
-</div>
