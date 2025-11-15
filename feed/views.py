@@ -4,8 +4,14 @@ from django.contrib import messages
 from django.http import JsonResponse
 from django.views.decorators.http import require_POST
 from django.db.models import Q, Count, Prefetch
-from .models import Post, Comment, PostLike, CommentLike, SavedPost, HashTag, Mention
-from .forms import PostForm, CommentForm, ReplyForm
+from .models import (
+    Post, Comment, PostLike, CommentLike, SavedPost, HashTag, Mention,
+    FeedPost, PostMedia, ProjectLink, PostComment, PostLikeNew, CommentLikeNew, SavedPostNew
+)
+from .forms import (
+    PostForm, CommentForm, ReplyForm,
+    BlogPostForm, ProjectPostForm, NormalPostForm, PostCommentForm
+)
 from accounts.models import Profile
 from django.contrib.auth import get_user_model
 
@@ -361,3 +367,337 @@ def saved_posts(request):
     }
 
     return render(request, "feed/saved_posts.html", context)
+
+
+# ============================================================================
+# NEW POST CREATION VIEWS - Blog, Project, and Normal Posts
+# ============================================================================
+
+
+@login_required
+def create_post_view(request):
+    """Main view to show post type selection"""
+    return render(request, "feed/create_post.html")
+
+
+@login_required
+def create_blog_post(request):
+    """View for creating blog posts"""
+    if request.method == "POST":
+        form = BlogPostForm(request.POST, request.FILES)
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.post_type = "blog"
+            post.save()
+            
+            messages.success(request, "Blog post created successfully!")
+            return redirect("feed:feed_list")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = BlogPostForm()
+    
+    context = {
+        "form": form,
+        "post_type": "blog",
+    }
+    return render(request, "feed/create_blog_post.html", context)
+
+
+@login_required
+def create_project_post(request):
+    """View for creating project posts"""
+    if request.method == "POST":
+        form = ProjectPostForm(request.POST)
+        
+        # Handle media files (images/videos)
+        media_files = request.FILES.getlist("project_media")
+        
+        # Validate max 5 media files
+        if len(media_files) > 5:
+            messages.error(request, "Maximum 5 images/videos allowed.")
+            return render(request, "feed/create_project_post.html", {"form": form, "post_type": "project"})
+        
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.post_type = "project"
+            post.save()
+            
+            # Save media files
+            for index, media_file in enumerate(media_files):
+                # Determine if it's an image or video
+                content_type = media_file.content_type
+                if content_type.startswith("image/"):
+                    media_type = "image"
+                elif content_type.startswith("video/"):
+                    media_type = "video"
+                else:
+                    continue  # Skip unsupported file types
+                
+                PostMedia.objects.create(
+                    post=post,
+                    media_type=media_type,
+                    file=media_file,
+                    order=index
+                )
+            
+            # Save project links
+            for i in range(1, 4):
+                link_title = form.cleaned_data.get(f"link_title_{i}")
+                link_url = form.cleaned_data.get(f"link_url_{i}")
+                
+                if link_title and link_url:
+                    ProjectLink.objects.create(
+                        post=post,
+                        title=link_title,
+                        url=link_url,
+                        order=i
+                    )
+            
+            messages.success(request, "Project post created successfully!")
+            return redirect("feed:feed_list")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = ProjectPostForm()
+    
+    context = {
+        "form": form,
+        "post_type": "project",
+    }
+    return render(request, "feed/create_project_post.html", context)
+
+
+@login_required
+def create_normal_post(request):
+    """View for creating normal posts"""
+    if request.method == "POST":
+        form = NormalPostForm(request.POST)
+        
+        # Handle media files (images/videos)
+        media_files = request.FILES.getlist("normal_media")
+        
+        # Validate max 5 media files
+        if len(media_files) > 5:
+            messages.error(request, "Maximum 5 images/videos allowed.")
+            return render(request, "feed/create_normal_post.html", {"form": form, "post_type": "normal"})
+        
+        if form.is_valid():
+            post = form.save(commit=False)
+            post.author = request.user
+            post.post_type = "normal"
+            post.save()
+            
+            # Save media files
+            for index, media_file in enumerate(media_files):
+                # Determine if it's an image or video
+                content_type = media_file.content_type
+                if content_type.startswith("image/"):
+                    media_type = "image"
+                elif content_type.startswith("video/"):
+                    media_type = "video"
+                else:
+                    continue  # Skip unsupported file types
+                
+                PostMedia.objects.create(
+                    post=post,
+                    media_type=media_type,
+                    file=media_file,
+                    order=index
+                )
+            
+            messages.success(request, "Post created successfully!")
+            return redirect("feed:feed_list")
+        else:
+            messages.error(request, "Please correct the errors below.")
+    else:
+        form = NormalPostForm()
+    
+    context = {
+        "form": form,
+        "post_type": "normal",
+    }
+    return render(request, "feed/create_normal_post.html", context)
+
+
+@login_required
+def feed_list_new(request):
+    """Display the main feed with all new posts"""
+    
+    # Get all active posts, ordered by creation date
+    posts = (
+        FeedPost.objects.filter(is_active=True)
+        .select_related("author", "author__profile")
+        .prefetch_related(
+            "media_files",
+            "project_links",
+            "post_likes",
+            "saved_by_new",
+            "post_comments__author",
+        )
+        .order_by("-is_pinned", "-created_at")
+    )
+    
+    # Add user-specific data for each post
+    if request.user.is_authenticated:
+        for post in posts:
+            post.is_liked_by_user = post.post_likes.filter(user=request.user).exists()
+            post.is_saved_by_user = post.saved_by_new.filter(user=request.user).exists()
+    
+    # Get user's liked posts for UI state
+    liked_posts = set(
+        PostLikeNew.objects.filter(user=request.user).values_list("post_id", flat=True)
+    )
+    
+    # Get user's saved posts
+    saved_posts = set(
+        SavedPostNew.objects.filter(user=request.user).values_list("post_id", flat=True)
+    )
+    
+    context = {
+        "posts": posts,
+        "liked_posts": liked_posts,
+        "saved_posts": saved_posts,
+        "comment_form": PostCommentForm(),
+    }
+    
+    return render(request, "feed/feed_list_new.html", context)
+
+
+@login_required
+def post_detail_new(request, pk):
+    """Display a single post with all its comments"""
+    
+    post = get_object_or_404(
+        FeedPost.objects.select_related("author", "author__profile")
+        .prefetch_related("media_files", "project_links"),
+        pk=pk,
+        is_active=True
+    )
+    
+    # Increment view count
+    post.views_count += 1
+    post.save(update_fields=["views_count"])
+    
+    # Get all comments
+    comments = (
+        post.post_comments.select_related("author", "author__profile", "parent")
+        .prefetch_related("comment_likes_new")
+        .order_by("created_at")
+    )
+    
+    # Check if user liked the post
+    user_has_liked = PostLikeNew.objects.filter(post=post, user=request.user).exists()
+    
+    # Check if user saved the post
+    user_has_saved = SavedPostNew.objects.filter(post=post, user=request.user).exists()
+    
+    context = {
+        "post": post,
+        "comments": comments,
+        "user_has_liked": user_has_liked,
+        "user_has_saved": user_has_saved,
+        "comment_form": PostCommentForm(),
+    }
+    
+    return render(request, "feed/post_detail_new.html", context)
+
+
+@login_required
+@require_POST
+def toggle_like_new(request, pk):
+    """Toggle like on a post"""
+    post = get_object_or_404(FeedPost, pk=pk)
+    
+    like, created = PostLikeNew.objects.get_or_create(post=post, user=request.user)
+    
+    if not created:
+        like.delete()
+        liked = False
+    else:
+        liked = True
+    
+    return JsonResponse({
+        "success": True,
+        "liked": liked,
+        "likes_count": post.likes_count,
+    })
+
+
+@login_required
+@require_POST
+def add_comment_new(request, pk):
+    """Add a comment to a post"""
+    post = get_object_or_404(FeedPost, pk=pk)
+    form = PostCommentForm(request.POST)
+    
+    if form.is_valid():
+        comment = form.save(commit=False)
+        comment.post = post
+        comment.author = request.user
+        
+        # Check if it's a reply
+        parent_id = request.POST.get("parent_id")
+        if parent_id:
+            parent_comment = get_object_or_404(PostComment, pk=parent_id)
+            comment.parent = parent_comment
+        
+        comment.save()
+        messages.success(request, "Comment added successfully!")
+    else:
+        messages.error(request, "Failed to add comment.")
+    
+    return redirect("feed:post_detail", pk=pk)
+
+
+@login_required
+@require_POST
+def delete_post_new(request, pk):
+    """Delete a post"""
+    post = get_object_or_404(FeedPost, pk=pk, author=request.user)
+    post.delete()
+    messages.success(request, "Post deleted successfully!")
+    return redirect("feed:feed_list")
+
+
+@login_required
+@require_POST
+def toggle_save_new(request, pk):
+    """Toggle save on a post"""
+    post = get_object_or_404(FeedPost, pk=pk)
+    
+    saved, created = SavedPostNew.objects.get_or_create(post=post, user=request.user)
+    
+    if not created:
+        saved.delete()
+        is_saved = False
+    else:
+        is_saved = True
+    
+    return JsonResponse({
+        "success": True,
+        "saved": is_saved,
+    })
+
+
+@login_required
+@require_POST
+def toggle_comment_like_new(request, pk):
+    """Toggle like on a comment"""
+    comment = get_object_or_404(PostComment, pk=pk)
+    
+    like, created = CommentLikeNew.objects.get_or_create(comment=comment, user=request.user)
+    
+    if not created:
+        like.delete()
+        liked = False
+    else:
+        liked = True
+    
+    return JsonResponse({
+        "success": True,
+        "liked": liked,
+        "likes_count": comment.comment_likes_new.count(),
+    })

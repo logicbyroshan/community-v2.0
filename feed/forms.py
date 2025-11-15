@@ -1,5 +1,6 @@
 from django import forms
-from .models import Post, Comment
+from .models import Post, Comment, FeedPost, PostMedia, ProjectLink, PostComment
+from tinymce.widgets import TinyMCE
 
 
 class PostForm(forms.ModelForm):
@@ -120,4 +121,211 @@ class ReplyForm(forms.ModelForm):
         content = self.cleaned_data.get("content")
         if not content or not content.strip():
             raise forms.ValidationError("Reply cannot be empty.")
+        return content.strip()
+
+
+# ============================================================================
+# NEW POST CREATION FORMS - Blog, Project, and Normal Posts
+# ============================================================================
+
+
+class BlogPostForm(forms.ModelForm):
+    """Form for creating blog posts"""
+
+    class Meta:
+        model = FeedPost
+        fields = ["blog_title", "blog_thumbnail", "blog_content"]
+        widgets = {
+            "blog_title": forms.TextInput(
+                attrs={
+                    "class": "w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:border-orange-500 text-white",
+                    "placeholder": "Enter blog title...",
+                    "id": "blogTitle",
+                }
+            ),
+            "blog_thumbnail": forms.FileInput(
+                attrs={
+                    "class": "w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:border-orange-500 text-white",
+                    "accept": "image/*",
+                    "id": "blogThumbnail",
+                }
+            ),
+            "blog_content": TinyMCE(
+                attrs={
+                    "cols": 80,
+                    "rows": 20,
+                    "id": "blogContent",
+                }
+            ),
+        }
+
+    def clean_blog_title(self):
+        title = self.cleaned_data.get("blog_title")
+        if not title or not title.strip():
+            raise forms.ValidationError("Blog title is required.")
+        return title.strip()
+
+    def clean_blog_content(self):
+        content = self.cleaned_data.get("blog_content")
+        if not content or not content.strip():
+            raise forms.ValidationError("Blog content is required.")
+        return content
+
+
+class ProjectPostForm(forms.ModelForm):
+    """Form for creating project posts"""
+
+    # Additional fields for project links
+    link_title_1 = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "class": "w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:border-orange-500 text-white",
+                "placeholder": "Link title (e.g., GitHub, Live Demo)",
+            }
+        ),
+    )
+    link_url_1 = forms.URLField(
+        required=False,
+        widget=forms.URLInput(
+            attrs={
+                "class": "w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:border-orange-500 text-white",
+                "placeholder": "https://...",
+            }
+        ),
+    )
+    link_title_2 = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "class": "w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:border-orange-500 text-white",
+                "placeholder": "Link title (optional)",
+            }
+        ),
+    )
+    link_url_2 = forms.URLField(
+        required=False,
+        widget=forms.URLInput(
+            attrs={
+                "class": "w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:border-orange-500 text-white",
+                "placeholder": "https://... (optional)",
+            }
+        ),
+    )
+    link_title_3 = forms.CharField(
+        max_length=100,
+        required=False,
+        widget=forms.TextInput(
+            attrs={
+                "class": "w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:border-orange-500 text-white",
+                "placeholder": "Link title (optional)",
+            }
+        ),
+    )
+    link_url_3 = forms.URLField(
+        required=False,
+        widget=forms.URLInput(
+            attrs={
+                "class": "w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:border-orange-500 text-white",
+                "placeholder": "https://... (optional)",
+            }
+        ),
+    )
+
+    class Meta:
+        model = FeedPost
+        fields = ["project_title", "project_content"]
+        widgets = {
+            "project_title": forms.TextInput(
+                attrs={
+                    "class": "w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:border-orange-500 text-white",
+                    "placeholder": "Enter project name...",
+                    "id": "projectTitle",
+                }
+            ),
+            "project_content": TinyMCE(
+                attrs={
+                    "cols": 80,
+                    "rows": 15,
+                    "id": "projectContent",
+                }
+            ),
+        }
+
+    def clean_project_title(self):
+        title = self.cleaned_data.get("project_title")
+        if not title or not title.strip():
+            raise forms.ValidationError("Project name is required.")
+        return title.strip()
+
+    def clean_project_content(self):
+        content = self.cleaned_data.get("project_content")
+        if not content or not content.strip():
+            raise forms.ValidationError("Project description is required.")
+        return content
+
+    def clean(self):
+        cleaned_data = super().clean()
+
+        # Validate link pairs (if title provided, URL must be provided and vice versa)
+        for i in range(1, 4):
+            title_key = f"link_title_{i}"
+            url_key = f"link_url_{i}"
+            title = cleaned_data.get(title_key)
+            url = cleaned_data.get(url_key)
+
+            if title and not url:
+                self.add_error(url_key, f"URL is required when title is provided.")
+            if url and not title:
+                self.add_error(title_key, f"Title is required when URL is provided.")
+
+        return cleaned_data
+
+
+class NormalPostForm(forms.ModelForm):
+    """Form for creating normal posts"""
+
+    class Meta:
+        model = FeedPost
+        fields = ["normal_content"]
+        widgets = {
+            "normal_content": forms.Textarea(
+                attrs={
+                    "class": "w-full px-4 py-3 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:border-orange-500 text-white resize-none",
+                    "rows": 4,
+                    "placeholder": "What's on your mind?",
+                    "id": "normalContent",
+                }
+            ),
+        }
+
+    def clean_normal_content(self):
+        content = self.cleaned_data.get("normal_content")
+        if not content or not content.strip():
+            raise forms.ValidationError("Post content is required.")
+        return content.strip()
+
+
+class PostCommentForm(forms.ModelForm):
+    """Form for adding comments to FeedPosts"""
+
+    class Meta:
+        model = PostComment
+        fields = ["content"]
+        widgets = {
+            "content": forms.Textarea(
+                attrs={
+                    "class": "w-full px-4 py-2 bg-gray-800/50 border border-gray-700 rounded-lg focus:outline-none focus:border-orange-500 text-white resize-none",
+                    "rows": 2,
+                    "placeholder": "Write a comment...",
+                }
+            ),
+        }
+
+    def clean_content(self):
+        content = self.cleaned_data.get("content")
+        if not content or not content.strip():
+            raise forms.ValidationError("Comment cannot be empty.")
         return content.strip()
